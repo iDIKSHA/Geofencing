@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
@@ -122,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
-
         // Call GoogleApiClient connection when starting the Activity
         googleApiClient.connect();
     }
@@ -130,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         super.onStop();
-
         // Disconnect GoogleApiClient when stopping Activity
         googleApiClient.disconnect();
     }
@@ -146,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnectionSuspended(int i) {
         Log.w(TAG, "onConnectionSuspended()");
-
     }
 
     // GoogleApiClient.OnConnectionFailedListener fail
@@ -275,10 +271,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .title(title)
                 .draggable(true);
         if (map != null) {
-            // Remove last geoFenceMarker
-          /*  if (geoFenceMarker != null)
-                geoFenceMarker.remove();
-            */
             geoFenceMarker = map.addMarker(markerOptions);
             gfmarkr.add(geoFenceMarker);
            
