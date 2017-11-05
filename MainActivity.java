@@ -1,4 +1,4 @@
-package com.example.acer.geofencingmainactivity;
+package com.example.github.geofencingmainactivity;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onMapClick(LatLng latLng) {
         Log.d(TAG, "onMapClick(" + latLng + ")");
-      //  locs.add(latLng);       //8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
         markerForGeofence(latLng);
     }
 
@@ -196,18 +195,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
-        writeActualLocation(location);
-    }
-
-    // Write location coordinates on UI
-    private void writeActualLocation(Location location) {
-        //    textLat.setText( "Lat: " + location.getLatitude() );
-        //    textLong.setText( "Long: " + location.getLongitude() );
-        markerLocation(new LatLng(location.getLatitude(), location.getLongitude()));
-    }
-
-    private void writeLastLocation() {
-        writeActualLocation(lastLocation);
     }
 
     // Check for permission to access Location
@@ -292,10 +279,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
           /*  if (geoFenceMarker != null)
                 geoFenceMarker.remove();
             */
-            geoFenceMarker = map.addMarker(markerOptions);      //88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+            geoFenceMarker = map.addMarker(markerOptions);
             gfmarkr.add(geoFenceMarker);
-           // locs.add(latLng);
-
+           
             map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
                 public void onMarkerDragStart(Marker marker) {
@@ -443,10 +429,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (geoFenceMarker != null) {
 
             for (int i = 0; i < gfmarkr.size(); i++) {
-               Geofence geofence = createGeofence(gfmarkr.get(i), GEOFENCE_RADIUS, idd+i);   //geoFenceMarker.getPosition()
-          //  Geofence geofence = createGeofence(geoFenceMarker.getPosition(), GEOFENCE_RADIUS);
-                GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
-                addGeofence(geofenceRequest);
+               Geofence geofence = createGeofence(gfmarkr.get(i), GEOFENCE_RADIUS, idd+i);
+               GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
+               addGeofence(geofenceRequest);
             }
         } else {
             Log.e(TAG, "Geofence marker is null");
