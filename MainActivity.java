@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private LocationRequest locationRequest;
 
-    private final int UPDATE_INTERVAL = 3 * 60 * 1000; // 3 minutes
-    private final int FASTEST_INTERVAL = 30 * 1000;  // 30 secs
+    private final int UPDATE_INTERVAL = 30 * 1000; // 1/2 minutes(30 seconds)
+    private final int FASTEST_INTERVAL = (1 / 3) * 30 * 1000;  // 30 secs
 
-    ArrayList<LatLng> locs= new ArrayList<LatLng>();
+    ArrayList<LatLng> locs = new ArrayList<LatLng>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .title(title)
-                .draggable(true);
+                .draggable(false);
         if (map != null) {
             // Remove last geoFenceMarker
           /*  if (geoFenceMarker != null)
@@ -281,53 +281,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             */
             geoFenceMarker = map.addMarker(markerOptions);
             gfmarkr.add(geoFenceMarker);
-           
-            map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-                @Override
-                public void onMarkerDragStart(Marker marker) {
+            // locs.add(latLng);
 
-                }
-
-                @Override
-                public void onMarkerDrag(Marker marker) {
-
-                }
-
-                @Override
-                public void onMarkerDragEnd(Marker marker) {
-
-                    Log.d("System out", "onMarkerDragEnd...");
-                    map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-                    double lat=marker.getPosition().latitude;
-                    double lng=marker.getPosition().longitude;
-                    Toast.makeText(getBaseContext(),""+lat+", "+lng,Toast.LENGTH_SHORT).show();
-                    addressDragged(lat,lng);
-                }
-            });
         }
     }
 
-    public void addressDragged(final double lat, final double lng){
-
-                Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
-                String result = "";
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(
-                            lat, lng, 1);
-                    if (addressList != null && addressList.size() > 0) {
-                        String addres = addressList.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                        result = addres;
-                    }
-                    else {
-                        result="Failed to retrieve address.";
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "Unable connect to Geocoder", e);
-                }
-                Toast.makeText(getBaseContext(), result, Toast.LENGTH_SHORT).show();
-    }
-
-    private static final long GEO_DURATION = 60 * 60 * 1000;
+    private static final long GEO_DURATION = 3 * 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
     private static final float GEOFENCE_RADIUS = 350.0f; // in meters
 
@@ -352,13 +311,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .build();
     }
 
-    private PendingIntent geoFencePendingIntent;
+    // private PendingIntent geoFencePendingIntent;
     private final int GEOFENCE_REQ_CODE = 0;
 
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
-        if (geoFencePendingIntent != null)
-            return geoFencePendingIntent;
+        //if (geoFencePendingIntent != null)
+        //  return geoFencePendingIntent;
 
         Intent intent = new Intent(this, GeofenceTrasitionService.class);
         return PendingIntent.getService(
@@ -366,9 +325,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     // Add the created GeofenceRequest to the device's monitoring list
-    private void addGeofence(GeofencingRequest request) {
+    private void addGeofence(GeofencingRequest request, final Marker mark) {
         Log.d(TAG, "addGeofence");
-        if (checkPermission())
+        if (checkPermission()) {
             LocationServices.GeofencingApi.addGeofences(
                     googleApiClient,
                     request,
@@ -378,26 +337,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 public void onResult(@NonNull Status status) {
                     Log.i(TAG, "onResult: " + status);
                     if (status.isSuccess()) {
-                        drawGeofence();
+                        drawGeofence(mark);
+                        gfmarkrTracker.add(mark);
                     } else {
                         // inform about fail
                         Toast.makeText(getBaseContext(),"Could not addGeofence()",Toast.LENGTH_LONG).show();
                     }
                 }
             });
+        }
     }
 
     // Draw Geofence circle on GoogleMap
     private Circle geoFenceLimits;
 
-    private void drawGeofence() {
+    private void drawGeofence(Marker mark) {
         Log.d(TAG, "drawGeofence()");
 
-        if (geoFenceLimits != null)
+/*        if (geoFenceLimits != null)
             geoFenceLimits.remove();
-
+*/
         CircleOptions circleOptions = new CircleOptions()
-                .center(geoFenceMarker.getPosition())
+                .center(mark.getPosition())                    //888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
                 .strokeColor(Color.argb(50, 70, 70, 70))
                 .fillColor(Color.argb(100, 150, 150, 150))
                 .radius(GEOFENCE_RADIUS);
@@ -423,23 +384,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     // Start Geofence creation process
-    private String idd="\nMy Geofence";
+    private String idd = "My Geofence";
+
     private void startGeofence() {
         Log.i(TAG, "startGeofence()");
         if (geoFenceMarker != null) {
 
             for (int i = 0; i < gfmarkr.size(); i++) {
-               Geofence geofence = createGeofence(gfmarkr.get(i), GEOFENCE_RADIUS, idd+i);
-               GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
-               addGeofence(geofenceRequest);
+                Geofence geofence = createGeofence(gfmarkr.get(i), GEOFENCE_RADIUS, idd + i);   //geoFenceMarker.getPosition()
+                //  Geofence geofence = createGeofence(geoFenceMarker.getPosition(), GEOFENCE_RADIUS);
+                GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
+                addGeofence(geofenceRequest, gfmarkr.get(i));
             }
         } else {
             Log.e(TAG, "Geofence marker is null");
         }
     }
-    static Intent makeNotificationIntent(Context geofenceService, String msg)
-    {
-        Log.d(TAG,msg);
-        return new Intent(geofenceService,MainActivity.class);
+
+    static Intent makeNotificationIntent(Context geofenceService, String msg) {
+        Log.d(TAG, msg);
+        return new Intent(geofenceService, MainActivity.class);
     }
 }
