@@ -1,4 +1,4 @@
-package com.example.acer.geofencingmainactivity;
+package com.example.username.geofencingmainactivity;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
