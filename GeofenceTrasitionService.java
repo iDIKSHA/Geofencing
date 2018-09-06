@@ -1,4 +1,4 @@
-package com.example.github.geofencingmainactivity;
+package com.example.username.geofencingmainactivity;
 
 import android.app.IntentService;
 import android.app.Notification;
