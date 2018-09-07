@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.ResultCallbacks;
 import com.google.android.gms.common.api.Status;
@@ -68,7 +67,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int REQ_PERMISSION = 1;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private LocationRequest locationRequest;
-	// Defined in mili seconds.
+	
+    // Defined in mili seconds.
     // This number in extremely low, and should be used only for debug
     private final int UPDATE_INTERVAL = 30 * 1000; // 30 secs
     private final int FASTEST_INTERVAL = (1 / 3) * 30 * 1000;  // 10 secs
@@ -424,8 +424,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             for (GeofenceHandler geofenceHandler : gfmarkr) {
                 if (!geofenceHandler.isFenceSet()) {
-                    Geofence geofence = createGeofence(geofenceHandler.getMmarker(), GEOFENCE_RADIUS, GEOFENCE_REQ_ID);// + i);   //geoFenceMarker.getPosition()
-                    //  Geofence geofence = createGeofence(geoFenceMarker.getPosition(), GEOFENCE_RADIUS);
+                    Geofence geofence = createGeofence(geofenceHandler.getMmarker(), GEOFENCE_RADIUS, GEOFENCE_REQ_ID);
                     GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
                     addGeofence(geofenceRequest, geofenceHandler.getMmarker());
                     geofenceHandler.setFence(true);
